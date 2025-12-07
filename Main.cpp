@@ -6,86 +6,87 @@
 #include <string>
 #include <map>
 #include <windows.h>
+#include <fstream>
 using namespace std;
 using namespace literals::chrono_literals;
 
-mutex water;
-mutex free_time;
-map<int, string> chores = {{1, "[1] Take a shower"}, {2, "[2] Wash the dishes"}, {3, "[3] Cook dinner"}};
 //Will hold all of the threads as they run
 vector<thread> threads;
 
-void shower(){
-    water.lock();
+string longest_word(vector<string> words){
+    string longest = "";
 
-    cout << "Showering in progress" << endl;
-    this_thread::sleep_for(5s);
-    cout << "Shower finished" << endl;
-
-    water.unlock();
-}
-
-void dish_washer(){
-    water.lock();
-
-    cout << "Washing dishes" << endl;
-    this_thread::sleep_for(5s);
-    cout << "Dishes washed" << endl;
-
-    water.unlock();
-}
-
-void stove(){
-    free_time.lock();
-
-    cout << "Cooking Food" << endl;
-    this_thread::sleep_for(5s);
-    cout << "Food finished" << endl;
-
-    free_time.unlock();
-}
-
-void run_chore(int var){
-    switch (var){
-    case 1:
-        threads.emplace_back(shower);
-        chores.erase(var);
-        break;
-    case 2:
-        threads.emplace_back(dish_washer);
-        chores.erase(var);
-        break;
-    case 3:
-        threads.emplace_back(stove);
-        chores.erase(var);
-        break;
+    for(auto& word : words){
+        if(word.length() > longest.length()){
+            longest = word;
+        }
     }
+
+    return longest;
+}
+
+string shortest_word(vector<string> words){
+    string shortest = "";
+    int length = INT_MAX;
+
+    for(auto& word : words){
+        if(word.length() < length){
+            shortest = word;
+            length = word.length();
+        }
+    }
+
+    return shortest;
+}
+
+long average_length(vector<string> words){
+    long total_chars = 0;
+
+    for(auto& word : words){
+        total_chars += word.length();
+    }
+
+    return total_chars / words.size();
 }
 
 int main(){
     int num;
+    string word;
+    vector<string> words;
 
-    while(chores.empty() == false){
-        cout << "Type the number in brackets to do the matching chore" << endl;
+    ifstream stream("lorem_ipsum.txt");
 
-        //Will only print out the message for each chore, and ensures that the map
-        //is looped through properly, even when a chore has been completed
-        for(auto& chore : chores){
-            cout << chore.second << endl;
-        }
-
-        cout << "Enter Number: ";
-        cin >> num;
-        run_chore(num);
-        Sleep(1);
+    while(stream >> word){
+        words.push_back(word);
     }
 
-    //Will ensure all threads complete their execution before the program ends
-    for(auto& thread : threads){
-        thread.join();
-    }
+    cout << words.size() << endl;
 
-    cout << "All chores completed" << endl;
+    //Will determine the longest word in the file, and how long it takes to find said word
+    auto start = chrono::high_resolution_clock::now();
+    cout << "The longest word is: " << longest_word(words) << endl;
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+    cout << "Time: " << duration.count() << " microseconds" << endl;
+    cout << endl;
+
+    //Will determine the shortest word in the file
+    start = chrono::high_resolution_clock::now();
+    cout << "The shortest word is: " << shortest_word(words) << endl;
+    stop = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+    cout << "Time: " << duration.count() << " microseconds" << endl;
+    cout << endl;
+
+    //Will determine the average length of a word in the file
+    start = chrono::high_resolution_clock::now();
+    cout << "The average word length is: " << average_length(words) << endl;
+    stop = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+    cout << "Time: " << duration.count() << " microseconds" << endl;
+    cout << endl;
+
+    stream.close();
 
     return 0;
 }

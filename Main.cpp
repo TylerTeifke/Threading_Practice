@@ -7,47 +7,13 @@
 #include <map>
 #include <windows.h>
 #include <fstream>
+#include "multiThread.h"
+#include "solutions.h"
 using namespace std;
 using namespace literals::chrono_literals;
 
 //Will hold all of the threads as they run
 vector<thread> threads;
-
-string longest_word(vector<string> words){
-    string longest = "";
-
-    for(auto& word : words){
-        if(word.length() > longest.length()){
-            longest = word;
-        }
-    }
-
-    return longest;
-}
-
-string shortest_word(vector<string> words){
-    string shortest = "";
-    int length = INT_MAX;
-
-    for(auto& word : words){
-        if(word.length() < length){
-            shortest = word;
-            length = word.length();
-        }
-    }
-
-    return shortest;
-}
-
-void average_length(vector<string> words, long& average){
-    long total_chars = 0;
-
-    for(auto& word : words){
-        total_chars += word.length();
-    }
-
-    average = total_chars / words.size();
-}
 
 int main(){
     string word;
@@ -58,20 +24,25 @@ int main(){
     while(stream >> word){
         words.push_back(word);
     }
+    stream.close();
 
     cout << words.size() << endl;
 
     //Will determine the longest word in the file, and how long it takes to find said word
+    string longest = "";
     auto start = chrono::high_resolution_clock::now();
-    cout << "The longest word is: " << longest_word(words) << endl;
+    longest_word(words, longest);
+    cout << "The longest word is: " << longest << endl;
     auto stop = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
     cout << "Time: " << duration.count() << " microseconds" << endl;
     cout << endl;
 
     //Will determine the shortest word in the file
+    string shortest = "";
     start = chrono::high_resolution_clock::now();
-    cout << "The shortest word is: " << shortest_word(words) << endl;
+    shortest_word(words, shortest);
+    cout << "The shortest word is: " << shortest << endl;
     stop = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::microseconds>(stop - start);
     cout << "Time: " << duration.count() << " microseconds" << endl;
@@ -87,8 +58,11 @@ int main(){
     cout << "Time: " << duration.count() << " microseconds" << endl;
     cout << endl;
 
+    threaded_solution(5, words);
+
     //These vectors will be used to divide the collection of words into 5 different groups.
     //This way the program will be able to check each group simultaneously, and lower the run time
+    /*
     vector<string> words1;
     vector<string> words2;
     vector<string> words3;
@@ -116,7 +90,7 @@ int main(){
     long avg3 = 0;
     long avg4 = 0;
     long avg5 = 0;
-
+    
     start = chrono::high_resolution_clock::now();
     thread t1(average_length, words1, ref(avg1));
     thread t2(average_length, words2, ref(avg2));
@@ -137,8 +111,6 @@ int main(){
     stop = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::microseconds>(stop - start);
     cout << "Time: " << duration.count() << " microseconds" << endl;
-    
-    stream.close();
-
+    */
     return 0;
 }

@@ -7,7 +7,7 @@
 using namespace std;
 #pragma once
 
-void average_length(vector<string> words, long& average);
+void average_length(vector<string> words, double& average);
 void shortest_word(vector<string> words, string& shortest);
 void longest_word(vector<string> words, string& longest);
 

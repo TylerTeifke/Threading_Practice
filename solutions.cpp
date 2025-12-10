@@ -1,13 +1,13 @@
 #include "solutions.h"
 
-void average_length(vector<string> words, long& average){
-    long total_chars = 0;
+void average_length(vector<string> words, double& average){
+    double total_chars = 0;
 
     for(auto& word : words){
-        total_chars += word.length();
+        total_chars += (double) word.length();
     }
 
-    average = total_chars / words.size();
+    average = total_chars / (double) words.size();
 }
 
 void shortest_word(vector<string> words, string& shortest){

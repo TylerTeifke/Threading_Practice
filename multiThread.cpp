@@ -1,13 +1,19 @@
+//This file will split the original word vector into a bunch of smaller vectors
+//so that each vector can be searched in their own thread
+
 #include "multiThread.h"
 #include "solutions.h"
+#include "multiThreadSolution.h"
 
 void threaded_solution(int thread_num, vector<string> words){
     //Will hold all of the string vectors that will be used in each thread
     vector<vector<string>> word_collections;
-    //Holds all of the threads
-    vector<thread> threads;
     //Holds all of the average word lengths
-    vector<long> averages;
+    vector<double> averages;
+    //Holds all of the longest words
+    vector<string> longest_words;
+    //Holds all of the shortest words
+    vector<string> shortest_words;
 
     int collections_size = words.size() / thread_num;
 
@@ -22,29 +28,15 @@ void threaded_solution(int thread_num, vector<string> words){
         }
 
         word_collections.push_back(collection);
-        averages.push_back(0);
+        averages.push_back(0.0);
+        longest_words.push_back("");
+        shortest_words.push_back("");
         i += collections_size;
     }
 
-    cout << "number of collections " << word_collections.size() << endl; 
+    cout << "Number of threads: " << word_collections.size() << endl;
 
-    //launch all of the threads
-    for(int k = 0; k < word_collections.size(); k++){
-        threads.emplace_back(average_length, word_collections[k], ref(averages[k]));
-    }
-
-    //Wait for all of the threads to finish, then calculate the average
-    for(auto& thread : threads){
-        thread.join();
-    }
-    threads.clear();
-
-    long overall_average = 0;
-    for(auto& average : averages){
-        cout << average << endl;
-        overall_average += average;
-    }
-    overall_average /= averages.size();
-
-    cout << "Multi-threaded average: " << overall_average << endl;
+    multi_longest(word_collections, longest_words);
+    multi_shortest(word_collections, shortest_words);
+    multi_average(word_collections, averages);
 }

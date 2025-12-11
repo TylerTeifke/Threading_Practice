@@ -56,6 +56,16 @@ int main(){
     cout << "Time: " << duration.count() << " microseconds" << endl;
     cout << endl;
 
-    threaded_solution(5, words);
+    int threads = 1;
+    while(threads > 0){
+        cout << "Enter the number of threads you want to use. Enter 0 or a negative number to quit: ";
+        cin >> threads;
+
+        if(threads > 0){
+            threaded_solution(threads, words);
+        }
+    }
+
+    cout << "End Program" << endl;
     return 0;
 }

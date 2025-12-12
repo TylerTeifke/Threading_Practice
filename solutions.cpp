@@ -35,3 +35,20 @@ void longest_word(vector<string> words, string& longest){
 
     longest = new_longest;
 }
+
+void most_common_word(vector<string> words, string& most_common){
+    map<string, int> word_counts;
+    int greatest = 0;
+    string current_most_common = "";
+
+    for(auto& word : words){
+        word_counts[word] = word_counts[word] + 1;
+
+        if(word_counts[word] > greatest){
+            greatest = word_counts[word];
+            current_most_common = word;
+        }
+    }
+
+    most_common = current_most_common;
+}

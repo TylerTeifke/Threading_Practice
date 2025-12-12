@@ -56,6 +56,16 @@ int main(){
     cout << "Time: " << duration.count() << " microseconds" << endl;
     cout << endl;
 
+    //Will determine the most common word in the file
+    string most_common = "";
+    start = chrono::high_resolution_clock::now();
+    most_common_word(words, most_common);
+    cout << "The most common word is: " << most_common << endl;
+    stop = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+    cout << "Time: " << duration.count() << " microseconds" << endl;
+    cout << endl;
+
     int threads = 1;
     while(threads > 0){
         cout << "Enter the number of threads you want to use. Enter 0 or a negative number to quit: ";

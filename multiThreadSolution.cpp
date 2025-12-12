@@ -90,3 +90,37 @@ void multi_shortest(vector<vector<string>> word_collections, vector<string> shor
     cout << "Time: " << duration.count() << " microseconds" << endl;
     cout << endl;
 }
+
+void multi_common(vector<vector<string>> word_collections, vector<string> common_words){
+    vector<thread> threads;
+    //launch all of the threads
+    auto start = chrono::high_resolution_clock::now();
+    for(int k = 0; k < word_collections.size(); k++){
+        threads.emplace_back(most_common_word, word_collections[k], ref(common_words[k]));
+    }
+
+    //Wait for all of the threads to finish, then calculate the average
+    for(auto& thread : threads){
+        thread.join();
+    }
+    threads.clear();
+
+    string most_common = "";
+    map<string, int> word_counts;
+    int frequency = 0;
+    for(auto& word : common_words){
+        word_counts[word] = word_counts[word] + 1;
+
+        if(word_counts[word] > frequency){
+            most_common = word;
+            frequency = word_counts[word];
+        }
+    }
+
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+
+    cout << "Multi-threaded most common word: " << most_common << endl;
+    cout << "Time: " << duration.count() << " microseconds" << endl;
+    cout << endl;
+}
